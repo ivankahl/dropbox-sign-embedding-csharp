@@ -1,0 +1,95 @@
+﻿@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - DropboxSignEmbeddedSigning</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" href="~/lib/bulma/css/versions/bulma-no-dark-mode.css"/>
+    <style>
+        :root {
+            --bulma-primary-h: 176deg;
+            --bulma-primary-s: 56%;
+            --bulma-primary-l: 55%;
+            --bulma-link-h: 188deg;
+            --bulma-link-s: 56%;
+            --bulma-link-l: 23%;
+            --bulma-info-h: 206deg;
+            --bulma-info-l: 71%;
+            --bulma-success-h: 134deg;
+            --bulma-success-s: 100%;
+            --bulma-success-l: 71%;
+            --bulma-warning-h: 50deg;
+            --bulma-warning-l: 71%;
+            --bulma-danger-h: 0deg;
+            --bulma-danger-l: 71%;
+            --bulma-scheme-h: 176;
+            --bulma-scheme-s: 15%;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">
+                    LeaseSign<b>Pro</b>
+                </a>
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+            <div id="navbar" class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/">Home</a>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a class="navbar-item" href="/LeaseAgreements">Lease Agreements</a>
+                    }
+                </div>
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <partial name="_LoginPartial"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="py-6">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2024 - Dropbox Sign Demo - <a asp-area="" asp-page="/Privacy">Privacy</a>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    // Code to close the notifications
+    document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            const $notification = $delete.parentNode;
+
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+    });
+
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,29 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "Manage/_Layout";
+    }
+}
+
+<h1 class="is-size-2">Manage your account</h1>
+
+<div>
+    <h2 class="is-size-6">Change your account settings</h2>
+    <hr />
+    <div class="columns">
+        <div class="column is-one-quarter">
+            <partial name="_ManageNav" />
+        </div>
+        <div class="column is-three-quarters">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

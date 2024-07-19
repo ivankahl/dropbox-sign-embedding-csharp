@@ -1,0 +1,58 @@
+﻿@page
+@using DropboxSignEmbeddedSigning.DropboxSign
+@using DropboxSignEmbeddedSigning.Extensions
+@inject DropboxSignConfiguration DropboxSignConfiguration;
+@model DropboxSignEmbeddedSigning.Pages.LeaseAgreements.Index
+
+@{
+    ViewData["Title"] = "Lease Agreements";
+    Layout = "Shared/_Layout";
+}
+
+<h1 class="is-size-2">@ViewData["Title"]</h1>
+<p class="is-size-6">Manage lease agreements you've created or need to sign.</p>
+<hr />
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage ))
+{
+    <div class="notification is-success">@Model.SuccessMessage</div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="notification is-danger">@Model.ErrorMessage</div>
+}
+
+<a href="/LeaseAgreements/New" class="button is-primary">New Lease Agreement</a>
+
+<!-- Create a table that displays leases in the database. Show the property, lease term, lessor, lessee and agent -->
+<table class="table is-fullwidth">
+    <thead>
+    <tr>
+        <th>Property</th>
+        <th>Term</th>
+        <th>Lessor</th>
+        <th>Lessee</th>
+        <th>Agent</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var lease in Model.Leases)
+    {
+        <tr>
+            <td>@lease.Property</td>
+            <td>@lease.Term.GetEnumDisplayName()</td>
+            <td>@lease.LessorName</td>
+            <td>@lease.LesseeName</td>
+            <td>@lease.AgentName</td>
+            <td>
+                @if (lease.DropboxSignSignatureId is not null)
+                {
+                    <a href="/LeaseAgreements/Sign?leaseAgreementId=@lease.Id" class="button is-primary is-small">Sign</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,22 @@
+﻿@page
+@inject SignInManager<IdentityUser> SignInManager
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="has-text-centered">
+    <h1 class="is-size-1 my-2">Dropbox Sign Demo</h1>
+    <p>This website demonstrates how you can integrate Dropbox Sign into your ASP.NET application. Please register or log in to see it in action.</p>
+    <div class="my-4">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a href="/LeaseAgreements" class="button is-medium is-primary">Go to Lease Agreements</a>
+        }
+        else
+        {
+            <a href="/Identity/Account/Login" class="button is-medium is-light mr-2">Log In</a>
+            <a href="/Identity/Account/Register" class="button is-medium is-primary ml-2">Sign Up</a>
+        }
+    </div>
+</div>

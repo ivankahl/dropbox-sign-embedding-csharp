@@ -1,0 +1,15 @@
+﻿@page
+@using DropboxSignEmbeddedSigning.DropboxSign
+@inject DropboxSignConfiguration DropboxSignConfiguration
+@model DropboxSignEmbeddedSigning.Pages.LeaseAgreements.Sign
+
+@{
+    Layout = "Shared/_Layout";
+    ViewData["Title"] = "Sign Lease Agreement";
+}
+
+<h2 class="is-size-2">@ViewData["Title"]</h2>
+<hr/>
+<div class="notification is-success is-hidden" id="success-message">
+    <p>Successfully signed the lease agreement.</p>
+</div>

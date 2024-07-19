@@ -1,0 +1,96 @@
+﻿@page
+@using DropboxSignEmbeddedSigning.Data.Models
+@model DropboxSignEmbeddedSigning.Pages.LeaseAgreements.New
+
+@{
+    ViewData["Title"] = "New Lease Agreement";
+    Layout = "Shared/_Layout";
+}
+
+<h1 class="is-size-2">@ViewData["Title"]</h1>
+<p class="is-size-6">Fill in the details for the new lease agreement to be signed.</p>
+<hr />
+
+<form method="post" enctype="multipart/form-data">
+    <div class="field">
+        <input type="text" asp-for="Input.Property" class="input" placeholder="Property"/>
+        <span asp-validation-for="Input.Property" class="has-text-danger"></span>
+    </div>
+    
+    <div class="field">
+        <div class="select is-fullwidth">
+            <select asp-for="Input.Term" asp-items="Html.GetEnumSelectList<LeaseTerm>()">
+                <option value="" selected="selected">Lease Term</option>
+            </select>
+        </div>
+        <span asp-validation-for="Input.Term" class="has-text-danger"></span>
+    </div>
+
+    <div class="field">
+        <div class="file has-name is-fullwidth">
+            <label class="file-label">
+                <input type="file" asp-for="Input.LeaseAgreementFile" class="file-input" id="LeaseAgreementFile"/>
+                <span class="file-cta">
+                <span class="file-icon">
+                    <span class="material-symbols-rounded">upload</span>
+                </span>
+                <span class="file-label">Choose a file...</span>
+            </span>
+                <span class="file-name" id="LeaseAgreementFileName">Lease Agreement</span>
+            </label>
+        </div>
+        <span asp-validation-for="Input.LeaseAgreementFile" class="has-text-danger"></span>
+    </div>
+
+    <h3 class="is-size-4 mt-4">Lessor Details</h3>
+    <div class="columns">
+        <div class="column field">
+            <input type="text" asp-for="Input.LessorName" class="input" placeholder="Name"/>
+            <span asp-validation-for="Input.LessorName" class="has-text-danger"></span>
+        </div>
+        <div class="column field">
+            <input type="text" asp-for="Input.LessorEmailAddress" class="input" placeholder="Email Address"/>
+            <span asp-validation-for="Input.LessorEmailAddress" class="has-text-danger"></span>
+        </div>
+    </div>
+
+    <h3 class="is-size-4">Lessee Details</h3>
+    <div class="columns">
+        <div class="column field">
+            <input type="text" asp-for="Input.LesseeName" class="input" placeholder="Name"/>
+            <span asp-validation-for="Input.LesseeName" class="has-text-danger"></span>
+        </div>
+        <div class="column field">
+            <input type="text" asp-for="Input.LesseeEmailAddress" class="input" placeholder="Email Address"/>
+            <span asp-validation-for="Input.LesseeEmailAddress" class="has-text-danger"></span>
+        </div>
+    </div>
+    
+    <h3 class="is-size-4">Agent Details (optional)</h3>
+    <p class="is-size-6">Only required if lease is managed by an agent.</p>
+    <div class="columns">
+        <div class="column field">
+            <input type="text" asp-for="Input.AgentName" class="input" placeholder="Name"/>
+            <span asp-validation-for="Input.AgentName" class="has-text-danger"></span>
+        </div>
+        <div class="column field">
+            <input type="text" asp-for="Input.AgentEmailAddress" class="input" placeholder="Email Address"/>
+            <span asp-validation-for="Input.AgentEmailAddress" class="has-text-danger"></span>
+        </div>
+    </div>
+    
+    <br/>
+    <button type="submit" class="button is-primary">Submit</button>
+</form>
+
+@section Scripts
+{
+    <script>
+        // Function that displays the file name once picked.
+        document.querySelector("#LeaseAgreementFile").addEventListener("change", function() {
+            const file = document.querySelector("#LeaseAgreementFile").files[0];
+            document.querySelector("#LeaseAgreementFileName").textContent = file.name;
+        });
+    
+    </script>
+}
