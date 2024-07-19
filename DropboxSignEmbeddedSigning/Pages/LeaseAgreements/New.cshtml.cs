@@ -4,11 +4,15 @@ using DropboxSignEmbeddedSigning.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using DropboxSignEmbeddedSigning.DropboxSign;
+using Dropbox.Sign.Api;
+using Dropbox.Sign.Client;
+using Dropbox.Sign.Model;
 
 namespace DropboxSignEmbeddedSigning.Pages.LeaseAgreements;
 
 [Authorize(Roles = "Administrator")]
-public class New(IWebHostEnvironment environment, ApplicationDbContext dbContext) : PageModel
+public class New(IWebHostEnvironment environment, ApplicationDbContext dbContext, DropboxSignConfiguration dsConfig) : PageModel
 {
     [BindProperty]
     public InputModel Input { get; set; }
@@ -58,7 +62,55 @@ public class New(IWebHostEnvironment environment, ApplicationDbContext dbContext
 
     private async Task SendToDropboxSignAsync(string leaseAgreementFilePath, LeaseAgreement leaseAgreement)
     {
-        // TODO: Implement signing logic
+        // Create a new instance of the Signature Request API using the API Key in the app settings.
+        var api = new SignatureRequestApi(new Configuration() { Username = dsConfig.ApiKey });
+
+        // Specify which signature options should be available when signing the document.
+        var signingOptions = new SubSigningOptions(
+            draw: true,
+            phone: true,
+            type: true,
+            upload: true,
+            defaultType: SubSigningOptions.DefaultTypeEnum.Draw);
+
+        // Create a list of signers for the document based on the signatories in the lease agreement.
+        var signers = leaseAgreement.Signatories.Select(x => new SubSignatureRequestSigner(x.Name, x.EmailAddress))
+    .ToList();
+
+        // Create the signature request object which you'll send to the Dropbox Sign API    
+        var lessee = leaseAgreement.Signatories.First(x => x.Type == SignatoryType.Lessee);
+        var request = new SignatureRequestCreateEmbeddedRequest(
+            clientId: dsConfig.ClientId,
+            title: $"{leaseAgreement.Property} for {lessee.Name}",
+            message: $"Please sign the lease agreement for {leaseAgreement.Property}.",
+            ccEmailAddresses: dsConfig.CcEmailAddress,
+            testMode: dsConfig.TestMode,
+            files: [System.IO.File.OpenRead(leaseAgreementFilePath)],
+            signingOptions: signingOptions,
+            signers: signers);
+
+        try
+        {
+            // Send the request to the API and retrieve the response.
+            var response = await api.SignatureRequestCreateEmbeddedAsync(request);
+            
+            // Update the lease agreement in the database and signers with the Dropbox Sign IDs
+            leaseAgreement.DropboxSignSignatureRequestId = response.SignatureRequest.SignatureRequestId;
+            
+            foreach (var signer in response.SignatureRequest.Signatures)
+            {
+                var signatory = leaseAgreement.Signatories.First(x => string.Equals(signer.SignerEmailAddress,
+                    x.EmailAddress, StringComparison.InvariantCultureIgnoreCase));
+                signatory.DropboxSignSignatureId = signer.SignatureId;
+            }
+
+            dbContext.Update(leaseAgreement);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            ModelState.AddModelError(string.Empty, "An error occurred while sending the lease agreement for signature. Please try again");
+        }
     }
 
     /// <summary>

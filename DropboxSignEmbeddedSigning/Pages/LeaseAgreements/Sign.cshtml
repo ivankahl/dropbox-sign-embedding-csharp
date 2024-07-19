@@ -1,4 +1,6 @@
 ﻿@page
+@using DropboxSignEmbeddedSigning.DropboxSign
+@inject DropboxSignConfiguration DropboxSignConfiguration
 @model DropboxSignEmbeddedSigning.Pages.LeaseAgreements.Sign
 
 @{
@@ -14,5 +16,25 @@
 
 @section Scripts
 {
-
+    <script src="https://cdn.hellosign.com/public/js/embedded/v2.11.1/embedded.production.min.js"></script>
+    <script>
+        const clientId = '@Html.Raw(DropboxSignConfiguration.ClientId)';
+        const signUrl = '@Html.Raw(Model.SignUrl)';
+        
+        const client = new HelloSign();
+        client.on('finish', () => document.querySelector("#success-message").classList.remove("is-hidden"));
+        client.on('error', () => window.location.href = "/LeaseAgreements?errorMessage=Error occurred while signing.");
+        client.on('cancel', () => window.location.href = "/LeaseAgreements");
+        
+        function signDocument() {    
+            client.open(signUrl, {
+                clientId: clientId,
+                skipDomainVerification: true,
+                testMode: true,
+            });
+        }
+        
+        // Call the signDocument function when the page loads
+        document.addEventListener('DOMContentLoaded', signDocument);
+    </script>
 }

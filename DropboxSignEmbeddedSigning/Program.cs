@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DropboxSignEmbeddedSigning.Data;
+using DropboxSignEmbeddedSigning.DropboxSign;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
+
+// Add Dropbox-related services that we need
+var dropboxConfiguration = builder.Configuration.GetSection("DropboxSign").Get<DropboxSignConfiguration>() ??
+                           throw new InvalidOperationException("Please provide a Dropbox Sign API Key and Client ID");
+builder.Services.AddSingleton(dropboxConfiguration);
 
 var app = builder.Build();
 
